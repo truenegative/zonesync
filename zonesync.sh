@@ -20,6 +20,7 @@
 
 
 SLAVESVR='XXX.XXX.XXX.XXX';                             # Change this to set your slave server
+RPRT='22';                                              # Change this to your slave server's SSH port
 SLAVEFILEPATH='/var/named/zonesync';			        # Standard bind install on slave server
 #SLAVEFILEPATH='/var/named/chroot/var/named/zonesync';	# chrooted bind install on slave server
 
