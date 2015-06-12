@@ -29,8 +29,8 @@ NAMEDPATH='/var/named';                                 # Path to named files on
 #NAMEDPATH='/var/named/chroot/var/named';               # Use for chrooted installations of named
 NAMEDCONF='/etc/named.conf';                            # bind configuration file
 HOMEDIR='/home/zonesync';
-ZSCONFDIR="$HOMEDIR/conf";
-LOGDIR="$HOMEDIR/log";
+ZSCONFDIR="$HOMEDIR/zonesync/conf";
+LOGDIR="$HOMEDIR/zonesync/log";
 
 
 ## EDIT BELOW AT YOUR OWN RISK ##
@@ -48,6 +48,10 @@ VERSION="0.1.0";
 umask 033
 DATE=`date`;
 RSYNC=`which rsync`;
+
+## CREATE CONF/LOG FOLDERS IF NEEDED ##
+mkdir -p $ZSCONFDIR;
+mkdir -p $LOGDIR;
 
 echo "zoneSync v$VERSION (c) 2015 True Negative LLC";
 echo "Licensed under GPL";
