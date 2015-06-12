@@ -19,7 +19,7 @@
 
 
 
-SLAVESVR='173.45.225.9';                                # Change this to set your slave server
+SLAVESVR='XXX.XXX.XXX.XXX';                             # Change this to set your slave server
 SLAVEFILEPATH='/var/named/zonesync';			        # Standard bind install on slave server
 #SLAVEFILEPATH='/var/named/chroot/var/named/zonesync';	# chrooted bind install on slave server
 
