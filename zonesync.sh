@@ -23,6 +23,8 @@ SLAVESVR='XXX.XXX.XXX.XXX';                             # Change this to set you
 RPRT='22';                                              # Change this to your slave server's SSH port
 SLAVEFILEPATH='/var/named/zonesync';			        # Standard bind install on slave server
 #SLAVEFILEPATH='/var/named/chroot/var/named/zonesync';	# chrooted bind install on slave server
+SLAVERNDC='/sbin/rndc';                                 # rndc path on slave server
+#SLAVERNDC='/usr/sbin/rndc';
 
 MASTERIP=`hostname -i`;                                 # Get IP Address
 #MASTERIP='0.0.0.0';                                    # Uncomment if you wish to manually set the master IP
@@ -97,7 +99,7 @@ if [ -f $ZSCONF ]
 fi
 
 echo "Synchronizing to slave server: $SLAVESVR ($SLAVEZSCONF)";
-$RSYNC -azve \"ssh -p $RPRT $SLAVETMP $SLAVESVR:$SLAVEZSCONF\"
+$RSYNC -avz -e \"ssh -q -p $RPRT\" $SLAVETMP $SLAVESVR:$SLAVEZSCONF
 
 if [ "$?" -eq "0" ]
 then
@@ -105,3 +107,6 @@ then
 else
   echo "Error synchronizing. :("
 fi
+
+echo "Reloading slave configuration...";
+ssh -q -p $RPRT 'rndc reload';
