@@ -33,7 +33,7 @@ zoneSync is a bash script for synchronizing DNS records between masters and slav
     * On Slave, verify that /var/named/zonesync/zonesync.SLAVE.IP.ADDRESS.named.conf exists and is correct. If everything looks good, restart named: `service named restart`
   
   4. Set up a cronjob on the master to run every 15 mins or so:
-    * `5,20,35,50 * * * * /home/zonesync/zonesync.sh > /home/zonesync/log/zonesync.log`
+    * `5,20,35,50 * * * * /home/zonesync/zonesync/zonesync.sh > /home/zonesync/zonesync/log/zonesync.log`
   
   5. Enjoy!
 
