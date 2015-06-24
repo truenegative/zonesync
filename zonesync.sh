@@ -14,7 +14,7 @@
 #
 # For a copy of the GPL V3, see http://www.gnu.org/licenses/.
 # 
-# Last Updated: 2015/06/11
+# Last Updated: 2015/06/24
 # -------------------------------------------------------------------------
 
 
@@ -23,8 +23,8 @@ SLAVESVR='XXX.XXX.XXX.XXX';                             # Change this to set you
 RPRT='22';                                              # Change this to your slave server's SSH port
 SLAVEFILEPATH='/var/named/zonesync';			        # Standard bind install on slave server
 #SLAVEFILEPATH='/var/named/chroot/var/named/zonesync';	# chrooted bind install on slave server
-SLAVERNDC='/sbin/rndc';                                 # rndc path on slave server
-#SLAVERNDC='/usr/sbin/rndc';
+SLAVERNDC="/usr/sbin/rndc reload";                      # rndc path on slave server
+
 
 MASTERIP=`hostname -i`;                                 # Get IP Address
 #MASTERIP='0.0.0.0';                                    # Uncomment if you wish to manually set the master IP
@@ -51,6 +51,9 @@ VERSION="0.1.0";
 umask 033
 DATE=`date`;
 RSYNC=`which rsync`;
+RSYNCARGS="-a -vv -z"
+RRSH="ssh -q -p $RPRT";
+
 
 ## CREATE CONF/LOG FOLDERS IF NEEDED ##
 mkdir -p $ZSCONFDIR;
@@ -99,7 +102,8 @@ if [ -f $ZSCONF ]
 fi
 
 echo "Synchronizing to slave server: $SLAVESVR ($SLAVEZSCONF)";
-$RSYNC -avz -e \"ssh -q -p $RPRT\" $SLAVETMP $SLAVESVR:$SLAVEZSCONF
+export RSYNC_RSH=$RRSH;
+$RSYNC $RSYNCARGS $SLAVETMP $SLAVESVR:$SLAVEZSCONF
 
 if [ "$?" -eq "0" ]
 then
@@ -109,4 +113,12 @@ else
 fi
 
 echo "Reloading slave configuration...";
-ssh -q -p $RPRT 'rndc reload';
+ssh -q -p $RPRT $SLAVESVR "$SLAVERNDC";
+
+if [ "$?" -eq "0" ]
+then
+  echo "Done."
+else
+  echo "Error Reloading Slave Configuration on $SLAVESVR"
+fi
+
