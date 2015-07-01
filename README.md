@@ -15,7 +15,7 @@ zoneSync is a bash script for synchronizing DNS records between masters and slav
     * Change to user zonesync: `su - zonesync`
     * Generate Public/Private Keys: `ssh-keygen -t rsa -b 4096` (no passphrase)
   2. On Master (As user zonesync)
-    * Copy Public key over to slave: `cat .ssh/id_rsa.pub | ssh -p 22 zonesync@slave.ip.address 'cat >> .ssh/authorized_keys && chmod 700 .ssh && chmod 600 .ssh/authorized_keys'` (You will have to enter the password you set for zonesync above)
+    * Copy Public key over to slave: `mkdir -p .ssh && cat .ssh/id_rsa.pub | ssh -p 22 zonesync@slave.ip.address 'cat >> .ssh/authorized_keys && chmod 700 .ssh && chmod 600 .ssh/authorized_keys'` (You will have to enter the password you set for zonesync above)
     * Test connection w/o pasword `ssh -p 22 zonesync@slave.ip.address`
 
 ### Install zoneSync
@@ -43,13 +43,15 @@ zoneSync is a bash script for synchronizing DNS records between masters and slav
 ### Slave to Slave Replication
 1.  Edit original Master and add secondary's ip address to the allow-transfer and also-notify sections of named.conf.
 
-2.  Install zoneSync on first master:
+2.  Install zoneSync on first Slave:
    * Change to user zonesync (if not already logged in as zonesync user): `su - zonesync`
    * Get latest version of zoneSync: `git clone https://github.com/truenegative/zonesync.git`
    * Open up zonesync/zonesync.sh with vi or nano and change the variables at the beginning to match your slave server IP address and bind configuration.
    * Ensure that the SLAVE.IP.ADDRESS is in the allow-transfer and also-notify section of the main named.conf.
 
 3.  On secondary slave:
+   * Create user zonesync: `useradd zonesync && passwd zonesync`
+   * Modify user zonesync: `usermod -G named zonesync`
    * Create zonesync folders: `mkdir -p /var/named/zonesync && mkdir -p /var/named/zonesync/slaves` ( (`NOTE`): Use /var/named/chroot/var/named for chroot'd bind installations)
    * Set permissions: `chown -R zonesync:named /var/named/zonesync && chmod -R 770 /var/named/zonesync`
    * Add zonesync config file to named config: `cat "include \"zonesync/zonesync.SLAVE.IP.ADDRESS.named.conf\";" >> /etc/named.conf`
