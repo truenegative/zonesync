@@ -1,6 +1,6 @@
 #!/bin/sh
 # -------------------------------------------------------------------------
-# zoneSync v0.1.0
+# zoneSync v0.1.1
 # Copyright (c) 2015 True Negative LLC 
 #
 # This program is free software: you can redistribute it and/or modify it under 
@@ -14,13 +14,13 @@
 #
 # For a copy of the GPL V3, see http://www.gnu.org/licenses/.
 # 
-# Last Updated: 2015/06/24
+# Last Updated: 2015/07/1
 # -------------------------------------------------------------------------
 
 
 
-SLAVESVR='XXX.XXX.XXX.XXX';                             # Change this to set your slave server
-RPRT='22';                                              # Change this to your slave server's SSH port
+SLAVESVR=' 45.55.19.248';                             # Change this to set your slave server
+RPRT='1636';                                              # Change this to your slave server's SSH port
 SLAVEFILEPATH='/var/named/zonesync';			        # Standard bind install on slave server
 #SLAVEFILEPATH='/var/named/chroot/var/named/zonesync';	# chrooted bind install on slave server
 SLAVERNDC="/usr/sbin/rndc reload";                      # rndc path on slave server
@@ -47,9 +47,10 @@ ZSLOG="$LOGDIR/zonesync.log";
 
 
 ## BEGIN ##
-VERSION="0.1.0";
+VERSION="0.1.1";
 umask 033
 DATE=`date`;
+YEAR=`date +"%Y"`
 RSYNC=`which rsync`;
 RSYNCARGS="-a -vv -z"
 RRSH="ssh -q -p $RPRT";
@@ -59,40 +60,42 @@ RRSH="ssh -q -p $RPRT";
 mkdir -p $ZSCONFDIR;
 mkdir -p $LOGDIR;
 
-echo "zoneSync v$VERSION (c) 2015 True Negative LLC";
-echo "Licensed under GPL";
+echo -e "\n\nzoneSync v$VERSION (c) $YEAR True Negative LLC";
+echo "Licensed under GPL v3";
 echo $DATE;
 echo -e "\n\nRemoving previous files...";
 rm -f $ZSCONFDIR/*;
 echo "Done."
 
-echo "# Created by zoneSync"  > $SLAVETMP;
+echo "# Created by zoneSync v$VERSION (c) $YEAR True Negative LLC"  > $SLAVETMP;
 
 echo "Server: $MASTERIP";
 echo "Retrieving local zones...";
 
 grep "^[[:space:]]*zone" $NAMEDCONF|grep -v '^#'|grep -v "/zonesync/"|grep "type master"|perl -pe 's/^\s+//' >> $NAMEDMSTR;
+echo "Done."
 
-echo "Retrieving includes...";
-for include in `grep "^include" $NAMEDCONF|grep -v 'rndc.key'|grep -v "/zonesync/"|cut -d " " -f 2|cut -d "\"" -f 2|uniq`
-	do echo "Include: $include";
-	if echo $include | grep -qe "^/" ex
-		then  grep -P "^[\s]+zone" $include|grep -v '^#'|grep -v "/zonesync/"|grep "type master" >> $NAMEDMSTR;
-	else
-		grep -P "^[\s]+zone" $NAMEDPATH/$include|grep -v '^#'|grep -v "/zonesync/"|grep "type master" >> $NAMEDMSTR;
-	fi
+echo "Retrieving local includes...";
+for include in `grep "^include" $NAMEDCONF|grep -v '.key'|grep -v "/zonesync/"|cut -d " " -f 2|cut -d "\"" -f 2|uniq`
+	do 
+		echo "Include: $include";
+		grep -P "^[\s]+zone" $include|grep -v '^#'|grep -v "/zonesync/"|grep "type master" >> $NAMEDMSTR;
 done
+echo "Done."
 
-if [ -f $SLAVEZSCONF ]
-	then
-	#do echo "zoneSync :: Including $incl";
-	grep "^zone" $SLAVEZSCONF | grep -v '^#' | grep "type slave" >> $ZSCONF;
-fi
-
+echo "Modifying local zones...";
 for domain in `grep "^zone" $NAMEDMSTR | grep 'master' | grep -v 'type slave'| cut -d"\"" -f 2`
 	do
 		SLAVELINE="zone \"$domain\" { type slave; file \"$SLAVEZONEPATH/$domain.db\"; masters { $MASTERIP; }; }; ";
 		echo "${SLAVELINE}" >> $SLAVETMP;
+done
+echo "Done."
+
+echo "Retrieving slave zones...";
+for include in `grep "^include" $NAMEDCONF|grep -v '.key'|grep  "/zonesync/"|cut -d " " -f 2|cut -d "\"" -f 2|uniq`
+	do 
+		echo "Include: $include";
+		grep "^[[:space:]]*zone" $include | perl -pe 's/^\s+//' >> $ZSCONF;
 done
 
 if [ -f $ZSCONF ]
@@ -100,10 +103,13 @@ if [ -f $ZSCONF ]
 	echo -e "\n\n" >> $SLAVETMP;
 	cat $ZSCONF >> $SLAVETMP;
 fi
+echo -e "Done.\n\n"
 
 echo "Synchronizing to slave server: $SLAVESVR ($SLAVEZSCONF)";
 export RSYNC_RSH=$RRSH;
 $RSYNC $RSYNCARGS $SLAVETMP $SLAVESVR:$SLAVEZSCONF
+
+echo -e "\n\n"
 
 if [ "$?" -eq "0" ]
 then
@@ -112,7 +118,7 @@ else
   echo "Error synchronizing. :("
 fi
 
-echo "Reloading slave configuration...";
+echo -e "\n\nReloading slave configuration...";
 ssh -q -p $RPRT $SLAVESVR "$SLAVERNDC";
 
 if [ "$?" -eq "0" ]
