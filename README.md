@@ -86,7 +86,7 @@ If you would like to help contribute to this project, feel free to submit pull r
 
 ### About TN Labs
 
-TN Labs is the brainchid of hosting company, [True Negative](https://truenegative.com) that develops web apps, mobile apps, and more. The TN Labs community is a place where you can find information on our in-house apps, games & more, our open-source projects, as well as a collection of various development & system administration tutorials.
+TN Labs is the brainchild of hosting company, [True Negative](https://truenegative.com) that develops web apps, mobile apps, and more. The TN Labs community is a place where you can find information on our in-house apps, games & more, our open-source projects, as well as a collection of various development & system administration tutorials.
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/tn_labs.svg?style=social&label=Follow&maxAge=2592000?style=flat-square)]()
 
