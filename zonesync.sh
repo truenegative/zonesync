@@ -1,6 +1,6 @@
 #!/bin/sh
 # -------------------------------------------------------------------------
-# zoneSync v0.1.1
+# zoneSync v0.1.2
 # Copyright (c) 2015 True Negative LLC 
 #
 # This program is free software: you can redistribute it and/or modify it under 
@@ -14,13 +14,13 @@
 #
 # For a copy of the GPL V3, see http://www.gnu.org/licenses/.
 # 
-# Last Updated: 2015/07/1
+# Last Updated: 2016/09/06
 # -------------------------------------------------------------------------
 
 
 
-SLAVESVR=' 45.55.19.248';                             # Change this to set your slave server
-RPRT='1636';                                              # Change this to your slave server's SSH port
+SLAVESVR='XXX.XXX.XXX.XXX';                             # Change this to set your slave server
+RPRT='22';                                              # Change this to your slave server's SSH port
 SLAVEFILEPATH='/var/named/zonesync';			        # Standard bind install on slave server
 #SLAVEFILEPATH='/var/named/chroot/var/named/zonesync';	# chrooted bind install on slave server
 SLAVERNDC="/usr/sbin/rndc reload";                      # rndc path on slave server
@@ -37,6 +37,7 @@ LOGDIR="$HOMEDIR/zonesync/log";
 
 
 ## EDIT BELOW AT YOUR OWN RISK ##
+#################################
 
 SLAVEZONEPATH='/var/named/zonesync/slaves';
 SLAVEZSCONF="$SLAVEFILEPATH/zonesync.$MASTERIP.named.conf";
@@ -47,7 +48,7 @@ ZSLOG="$LOGDIR/zonesync.log";
 
 
 ## BEGIN ##
-VERSION="0.1.1";
+VERSION="0.1.2";
 umask 033
 DATE=`date`;
 YEAR=`date +"%Y"`
