@@ -24,11 +24,19 @@ source ./config/zs.conf
 ## EDIT BELOW AT YOUR OWN RISK ##
 #################################
 
-SLAVEZONEPATH='/var/named/zonesync/slaves';
+# Get Master IP Address 
+if [ -z ${MASTERIP+x} ]; then
+	MASTERIP=`hostname -i`;
+fi;
+
+ZSWORKDIR="$HOMEDIR/zonesync/work";                         # zoneSync Work Folder
+LOGDIR="$HOMEDIR/zonesync/log";                             # Log Dir                                   
+
+SLAVEZONEPATH="$SLAVEFILEPATH/zonesync/slaves";
 SLAVEZSCONF="$SLAVEFILEPATH/zonesync.$MASTERIP.named.conf";
-SLAVETMP="$ZSCONFDIR/slaves.named.tmp";
-NAMEDMSTR="$ZSCONFDIR/named.master.conf";
-ZSCONF="$ZSCONFDIR/zonesync.slaves.conf";
+SLAVETMP="$ZSWORKDIR/slaves.named.tmp";
+NAMEDMSTR="$ZSWORKDIR/named.master.conf";
+ZSWORK="$ZSWORKDIR/zonesync.slaves.conf";
 ZSLOG="$LOGDIR/zonesync.log";
 
 
@@ -43,14 +51,14 @@ RRSH="ssh -q -p $RPRT";
 
 
 ## CREATE CONF/LOG FOLDERS IF NEEDED ##
-mkdir -p $ZSCONFDIR;
+mkdir -p $ZSWORKDIR;
 mkdir -p $LOGDIR;
 
 echo -e "\n\nzoneSync v$VERSION (c) $YEAR True Negative LLC";
 echo "Licensed under GPL v3";
 echo $DATE;
 echo -e "\n\nRemoving previous files...";
-rm -f $ZSCONFDIR/*;
+rm -f $ZSWORKDIR/*;
 echo "Done."
 
 echo "# Created by zoneSync v$VERSION (c) $YEAR True Negative LLC"  > $SLAVETMP;
@@ -81,13 +89,13 @@ echo "Retrieving slave zones...";
 for include in `grep "^include" $NAMEDCONF|grep -v '.key'|grep  "/zonesync/"|cut -d " " -f 2|cut -d "\"" -f 2|uniq`
 	do 
 		echo "Include: $include";
-		grep "^[[:space:]]*zone" $include | perl -pe 's/^\s+//' >> $ZSCONF;
+		grep "^[[:space:]]*zone" $include | perl -pe 's/^\s+//' >> $ZSWORK;
 done
 
-if [ -f $ZSCONF ]
+if [ -f $ZSWORKDIR ]
 	then
 	echo -e "\n\n" >> $SLAVETMP;
-	cat $ZSCONF >> $SLAVETMP;
+	cat $ZSWORK >> $SLAVETMP;
 fi
 echo -e "Done.\n\n"
 
