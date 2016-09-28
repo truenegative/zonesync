@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 # -------------------------------------------------------------------------
-# zoneSync v0.1.2
-# Copyright (c) 2015 True Negative LLC 
+# zoneSync v0.2.0
+# Copyright (c) 2016 True Negative LLC 
 #
 # This program is free software: you can redistribute it and/or modify it under 
 # the terms of the GNU General Public License as published by the Free Software 
@@ -14,26 +14,11 @@
 #
 # For a copy of the GPL V3, see http://www.gnu.org/licenses/.
 # 
-# Last Updated: 2016/09/06
+# Last Updated: 2016/09/28
 # -------------------------------------------------------------------------
 
 
-
-SLAVESVR='XXX.XXX.XXX.XXX';                             # Change this to set your slave server
-RPRT='22';                                              # Change this to your slave server's SSH port
-SLAVEFILEPATH='/var/named/zonesync';			        # Standard bind install on slave server
-#SLAVEFILEPATH='/var/named/chroot/var/named/zonesync';	# chrooted bind install on slave server
-SLAVERNDC="/usr/sbin/rndc reload";                      # rndc path on slave server
-
-
-MASTERIP=`hostname -i`;                                 # Get IP Address
-#MASTERIP='0.0.0.0';                                    # Uncomment if you wish to manually set the master IP
-NAMEDPATH='/var/named';                                 # Path to named files on local (master)
-#NAMEDPATH='/var/named/chroot/var/named';               # Use for chrooted installations of named
-NAMEDCONF='/etc/named.conf';                            # bind configuration file
-HOMEDIR='/home/zonesync';
-ZSCONFDIR="$HOMEDIR/zonesync/conf";
-LOGDIR="$HOMEDIR/zonesync/log";
+source ./config/zs.conf
 
 
 ## EDIT BELOW AT YOUR OWN RISK ##
@@ -48,7 +33,7 @@ ZSLOG="$LOGDIR/zonesync.log";
 
 
 ## BEGIN ##
-VERSION="0.1.2";
+VERSION="0.2.0";
 umask 033
 DATE=`date`;
 YEAR=`date +"%Y"`
