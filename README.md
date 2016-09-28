@@ -16,7 +16,7 @@ It's very easy to replicate the DNS zones to 1, 2, 3 or 4 nameservers that can b
   * rsync / ssh
   * perl
   * bind (named)
-  * cron
+  * cron (optional, for automation)
 
 ### Pre-Install
   1. Ensure all requirements are installed on both master and slave systems.
@@ -68,7 +68,7 @@ It's very easy to replicate the DNS zones to 1, 2, 3 or 4 nameservers that can b
    * Modify user zonesync: `usermod -G named zonesync`
    * Create zonesync folders: `mkdir -p /var/named/zonesync && mkdir -p /var/named/zonesync/slaves` ( (`NOTE`): Use /var/named/chroot/var/named for chroot'd bind installations)
    * Set permissions: `chown -R zonesync:named /var/named/zonesync && chmod -R 770 /var/named/zonesync`
-   * Add zonesync config file to named config: `cat "include \"zonesync/zonesync.SLAVE.IP.ADDRESS.named.conf\";" >> /etc/named.conf`
+   * Add zonesync config file to named config: `cat "include \"zonesync/zonesync.MASTER.IP.ADDRESS.named.conf\";" >> /etc/named.conf`
 
 4.  Verify slave to slave
    * On Slave (as zonesync user) run: `./zonesync.sh` and check for any errors. If you get the message `Successful synchronization to SLAVE.IP.ADDRESS.` move on to the next step.
