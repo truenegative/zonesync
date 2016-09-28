@@ -34,8 +34,9 @@ It's very easy to replicate the DNS zones to 1, 2, 3 or 4 nameservers that can b
 ### Install zoneSync
   1. On Master:
     * Change to user zonesync (if not already logged in as zonesync user): `su - zonesync`
-    * Get latest version of zoneSync: `git clone https://github.com/truenegative/zonesync.git`
-    * Open up zonesync/zonesync.sh with vi or nano and change the variables at the beginning to match your slave server IP address and bind configuration.
+    * Get latest version of zoneSync: [Latest Release](https://github.com/truenegative/zonesync/releases/latest)
+    * Extract: `tar zxvf vX.X.X.tar.gz -C zonesync/`
+    * Open up `zonesync/config/zs.conf` with vi or nano and change the variables at the beginning to match your slave server IP address and bind configuration.
     * Ensure that the SLAVE.IP.ADDRESS is in the allow-transfer and also-notify section of the main named.conf.
   
   2. On Slave:
